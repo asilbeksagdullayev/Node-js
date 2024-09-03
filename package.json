@@ -1,0 +1,16 @@
+{
+	"name": "backend",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"starr": "node index.js",
+		"dev": "nodemon index.js"
+	},
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"nodemon": "^3.1.4",
+		"tailwind": "^4.0.0"
+	}
+}
