@@ -1,22 +1,23 @@
 require('dotenv').config();
 const http = require('http');
-const express = require('express');
 const mongoose = require('mongoose');
 const postModel = require('./model/post.model');
+const express = require('express');
 
 const app = express();
+
+const PORT = process.env.PORT || 5500;
+
+const server = http.createServer(app);
 
 app.use(express.json());
 
 app.get('/', async (req, res) => {
 	try {
-		const allPosts = await postModel.find();
-		res.status(200).json(allPosts);
-	} catch (error) {
-		res.status(500).json({ message: 'Error retrieving posts', error: error.message });
-	}
+		const allPost = await postModel.find();
+		res.status(200).json(allPost);
+	} catch (error) {}
 });
-const asilbek = {};
 
 app.post('/', async (req, res) => {
 	try {
@@ -28,19 +29,14 @@ app.post('/', async (req, res) => {
 	}
 });
 
-const server = http.createServer(app);
-const PORT = process.env.PORT || 8080;
-
 const StartApp = async () => {
 	try {
-		await mongoose
-			.connect(process.env.DB_URL)
-			.then(() => console.log('Successfully connected to MongoDB'));
+		await mongoose.connect(process.env.DB_URL).then(() => console.log('Success connecting in DB'));
 		server.listen(PORT, () => {
-			console.log(`Server is running on http://localhost:${PORT}`);
+			console.log('Start your project at http://localhost:5500');
 		});
 	} catch (error) {
-		console.log(`Error connecting to DB: ${error}`);
+		console.log(`Error connecting to DB ${error}`);
 	}
 };
 
