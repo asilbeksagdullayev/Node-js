@@ -1,27 +1,47 @@
+require('dotenv').config();
 const http = require('http');
+const express = require('express');
+const mongoose = require('mongoose');
+const postModel = require('./model/post.model');
 
-const server = http.createServer((req, res) => {
-	res.writeHead(200, { 'Content-Type': 'text/html' });
-	if (req.method === 'GET') {  // Use req.method instead of res.method
-		res.end(`
-<h3>Send name</h3>
-<form method="post" action="/">
-<input type="text" name="Name" placeholder="Enter your name" />
-<button type="submit">Send Name</button> <!-- Corrected type to 'submit' -->
-</form>
-	`);
-	} else if (req.method === 'POST') {
-		const name = [];
-		req.on('data', (data) => {
-			name.push(data);
-		});
-		req.on('end', () => {
-			const message = Buffer.concat(name).toString().split('=')[1];
-			res.end(`Name was successfully added: ${message}`);
-		});
+const app = express();
+
+app.use(express.json());
+
+app.get('/', async (req, res) => {
+	try {
+		const allPosts = await postModel.find();
+		res.status(200).json(allPosts);
+	} catch (error) {
+		res.status(500).json({ message: 'Error retrieving posts', error: error.message });
+	}
+});
+const asilbek = {};
+
+app.post('/', async (req, res) => {
+	try {
+		const { title, body } = req.body;
+		const newPost = await postModel.create({ title, body });
+		res.status(201).json(newPost);
+	} catch (error) {
+		res.status(500).json({ message: 'Error creating post', error: error.message });
 	}
 });
 
-server.listen(3000, () => {
-	console.log('Server was successfully started!');
-});
+const server = http.createServer(app);
+const PORT = process.env.PORT || 8080;
+
+const StartApp = async () => {
+	try {
+		await mongoose
+			.connect(process.env.DB_URL)
+			.then(() => console.log('Successfully connected to MongoDB'));
+		server.listen(PORT, () => {
+			console.log(`Server is running on http://localhost:${PORT}`);
+		});
+	} catch (error) {
+		console.log(`Error connecting to DB: ${error}`);
+	}
+};
+
+StartApp();
