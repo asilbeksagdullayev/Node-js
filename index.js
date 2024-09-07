@@ -10,24 +10,11 @@ const PORT = process.env.PORT || 5500;
 
 const server = http.createServer(app);
 
+//router
+const postRoute = require('./routes/post.router');
 app.use(express.json());
 
-app.get('/', async (req, res) => {
-	try {
-		const allPost = await postModel.find();
-		res.status(200).json(allPost);
-	} catch (error) {}
-});
-
-app.post('/', async (req, res) => {
-	try {
-		const { title, body } = req.body;
-		const newPost = await postModel.create({ title, body });
-		res.status(201).json(newPost);
-	} catch (error) {
-		res.status(500).json({ message: 'Error creating post', error: error.message });
-	}
-});
+app.use('/api/post/', postRoute);
 
 const StartApp = async () => {
 	try {
